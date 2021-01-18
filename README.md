@@ -5,8 +5,10 @@ The Atmega328 programmer communicates with a terminal program such as Bray++ run
 The terminal program downloads a hex file to the programmer which parses it and copies the resulting commands
 to a target device.
 Flash, configuration bytes and EEPROM can all be programmed.
-Parts of this code can be cut and paste into other applications as required.
+Parts of this code can be cut and pasted into other applications as required.
 
-In addition to programming over the standard MOSI.MISO interface it has also been adapted for use as a bootloader.
+In addition to programming over the standard MOSI,MISO interface it has also been adapted for use as a bootloader.
 
-The UNO is one obvious place to pput this code.
+The versions given here have been adapted to run on a UNO. 
+Many novices will already have a UNO. The purpose of this development is to offer them a means of programming new devices
+without the need to master new software tools and techniques.  
