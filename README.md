@@ -10,5 +10,5 @@ Parts of this code can be cut and pasted into other applications as required.
 In addition to programming over the standard MOSI,MISO interface it has also been adapted for use as a bootloader.
 
 The versions given here have been adapted to run on a UNO. 
-Many novices will already have a UNO. The purpose of this development is to offer them a means of programming new devices
-without the need to master new software tools and techniques.  
+Many novices will already have a UNO. The purpose of this development is to offer them an easy way of programming new devices
+with the minimum need to use new software tools and techniques. 
