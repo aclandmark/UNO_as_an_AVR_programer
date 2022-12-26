@@ -12,3 +12,12 @@ In addition to programming over the standard MOSI,MISO interface it has also bee
 The versions given here have been adapted to run on a UNO. 
 Many novices will already have a UNO. The purpose of this development is to offer them an easy way of programming new devices
 with the minimum need to use new software tools and techniques. 
+
+Links to relevent AVRfreaks projects
+
+
+https://github.com/MicrochipTech/avrfreaks-projects/tree/9e6bc971411a2d69374012572b3b6144f2f3f7f2/projects/unoavrprogrammer
+
+https://github.com/MicrochipTech/avrfreaks-projects/tree/9e6bc971411a2d69374012572b3b6144f2f3f7f2/projects/unoavrprogrammerv2
+
+
