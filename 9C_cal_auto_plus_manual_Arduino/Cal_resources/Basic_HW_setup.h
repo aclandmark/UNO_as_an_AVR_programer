@@ -63,7 +63,7 @@ set_device_type_and_memory_size;\
 \
 switch(sig_byte_2){\
 	case 0x95: if(sig_byte_3 != 2)USART_init(0,25);\
-	else USART_init_32(0,25); break;\
+	else ; break;\
 default: USART_init(0,25); break;}
 
 
