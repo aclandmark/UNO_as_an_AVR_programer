@@ -121,9 +121,9 @@ TIMSK1 &= (~(1 << TOIE1));
 /*****************************************************************************/
 #define calibrate_without_sign_plus_warm_up_time \
 cal_mode = 5;\
-cal_error = compute_error(0,cal_mode,0);\
-cal_error = compute_error(0,cal_mode,0);\
-cal_error = compute_error(0,cal_mode,0);
+cal_error = compute_error_Xtal(0,cal_mode,0);\
+cal_error = compute_error_Xtal(0,cal_mode,0);\
+cal_error = compute_error_Xtal(0,cal_mode,0);
 
 
 
