@@ -29,16 +29,16 @@ int main (void)
   int EEP_MAX = 0x2000;
   
   setup_HW;
-
-  ASSR = (1 << AS2);                                //initialise T2 for crystal
+  OCR1A = 0xFF;
+  //ASSR = (1 << AS2);                                //initialise T2 for crystal
   OSCCAL_DV = OSCCAL;                               //Save default value off OSCCAL
 
   Auto_cal (0);                                 //Search starting from 0xF0
   OSCCAL += 1;                                  //Check performance for OSCCAL_WV +/- 1
   Get_ready_to_calibrate;
   sei();
-  error_up = compute_error(0,2,0);                        //Check that OSCCAL_WV is not at a
-  OSCCAL -=2; error_down = compute_error(0,2,0);                  //discontinuity on the
+  error_up = compute_error_UNO(0,2,0);                        //Check that OSCCAL_WV is not at a
+  OSCCAL -=2; error_down = compute_error_UNO(0,2,0);                  //discontinuity on the
   close_calibration;                                //OSCCAL v error plot
   cli();
   OSCCAL += 1;                                  //Restore OSCCAL to OSCCAL_WV
@@ -84,13 +84,13 @@ void Auto_cal (char direction){
 
   sei();
   cal_mode = 1;
-  Get_ready_to_calibrate;
+  //Get_ready_to_calibrate;
   
   if (!(direction))
     {counter_1 = 0xF1;
     while(1){sendChar('.');
       counter_1 -= 1;
-      OSCCAL = counter_1; error_mag = compute_error(0,cal_mode,0);
+      OSCCAL = counter_1; error_mag = compute_error_UNO(0,cal_mode,0);
       if(counter_1 > 0xE0)continue;
       if(error_mag < 1000)break;}
     OSCCAL_mem = OSCCAL;
@@ -106,7 +106,7 @@ void Auto_cal (char direction){
     {counter_1 = 0x0F;
       while(1){sendChar('.');
         counter_1 += 1;
-        OSCCAL = counter_1; error_mag = compute_error(0,cal_mode,0);
+        OSCCAL = counter_1; error_mag = compute_error_UNO(0,cal_mode,0);
         if(counter_1 < 0x20)continue;
         if(error_mag < 1000)break;}
       OSCCAL_mem = OSCCAL;
@@ -118,10 +118,10 @@ void Auto_cal (char direction){
         Minimise_error_up(limit, &counter_1, &counter_2,\
          &error_mag, &OSCCAL_mem, cal_mode);}}
   
-  error_mag = compute_error(0,cal_mode,0);
+  error_mag = compute_error_UNO(0,cal_mode,0);
   OSCCAL_WV = OSCCAL;
   close_calibration;
-
+Num_to_PC(10, error_mag);sendChar('A');Num_to_PC(10, OSCCAL_mem);
   UCSR0B |= (1 << RXEN0);
 cli();}
 
@@ -143,11 +143,11 @@ void Manual_cal(void){
 
   EA_buff_ptr = 0;
   cal_mode = 5;
-  Get_ready_to_calibrate;
+  ////Get_ready_to_calibrate;
   OSCCAL -=20;
   osccal_MIN = OSCCAL;                            //Compute cal error for 41 values of OSCCAL
   for(int m = 0; m <= 40; m++)
-  {cal_error = compute_error(1,cal_mode,1);OSCCAL++;}
+  {cal_error = compute_error_UNO(1,cal_mode,1);OSCCAL++;}
   OSCCAL = OSCCAL_WV;                             //Restore working value of OSCCAL
   close_calibration;
 
@@ -160,8 +160,9 @@ void Manual_cal(void){
     sendChar('\t');Num_to_PC(10,buffer[m]);
     sendChar('\t');
     percentage_error = buffer[m];
-    Num_to_PC(10,percentage_error*100/62500);sendChar('%');
+    Num_to_PC(10,percentage_error*100/32768);sendChar('%');
     newline();
+    Timer_T0_sub(T0_delay_20ms);
   Timer_T0_sub(T0_delay_20ms);}                       //stops PC being overwhelmed with data
 
   sendString("\r\nEnter new user cal value or x to escape.");
@@ -197,7 +198,7 @@ void Manual_cal(void){
 
 
   /*************************************************************************************************************************************/
-  ISR(TIMER2_OVF_vect) {
+ /* ISR(TIMER2_OVF_vect) {                      //For use with watch Xtal
     long TCNT1_BKP, overflow = 0, target_res;
 
     target_res = 62500;
@@ -217,8 +218,25 @@ void Manual_cal(void){
     T1_OVF = 0;}
   EA_counter++;}
 
+*/
+
+
+ISR (PCINT0_vect){                       //UNO provides time standard   Pin change interrupt on SCK pin
+                    
+      if (!(TCCR1B)) {
+      TCNT1_sum = 0;
+      TCNT1 = 0;
+      TCCR1B = prescaller_setting;}             //1MHz clock
+  
+    else {TCCR1B = 0; int_counter += 1;
+      error_sum = error_sum + TCNT1_sum - 32768 + TCNT1;
+    }}
+ 
 
 
 
   /************************************************************************************************************************************/
-  ISR(TIMER1_OVF_vect) {T1_OVF += 1;}
+//ISR(TIMER1_OVF_vect) {T1_OVF += 1;}       //For use with watch Xtal
+ISR(TIMER1_COMPA_vect){TCNT1_sum += 0x100; }    //UNO provides time standard
+
+  /************************************************************************************************************************************/
