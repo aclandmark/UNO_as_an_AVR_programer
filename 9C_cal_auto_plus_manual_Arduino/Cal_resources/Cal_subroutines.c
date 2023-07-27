@@ -1,5 +1,6 @@
 
-
+long compute_error_Xtal(char, char, char);
+long compute_error_UNO(char, char, char);
 
 /********************************************************************************************************************************/
 void save_cal_values(unsigned char OSCCAL_user){
@@ -24,25 +25,26 @@ Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-3)); sendString("\t\tDefault val
 /******************************************************************************************************************************/
 void initialise_timers_for_cal_error(void){
 TCNT1=0;TCCR1B = 0;													//Reset and halt T1
-TCCR2B =  0x0;	while(ASSR & (1 << TCR2BUB));						//Halt T2
-TCCR2A = 0; while(ASSR & (1 << TCR2AUB));							//Reset T2 
-TCNT2=0; while(ASSR & (1 << TCN2UB));	}							//Reset TCNT2
+//TCCR2B =  0x0;	while(ASSR & (1 << TCR2BUB));						//Halt T2
+//TCCR2A = 0; while(ASSR & (1 << TCR2AUB));							//Reset T2 
+//TCNT2=0; while(ASSR & (1 << TCN2UB));	
+}																//Reset TCNT2
 
 
 
 
 /*********************************************************************************************************************************/
-void start_timers_for_cal_error(void)
-{TCCR2B = 1; 	
-while(ASSR & (1 << TCR2BUB));
-TCCR1B = 1;}
+void start_timers_for_cal_error(void){}
+//{TCCR2B = 1; 	
+//while(ASSR & (1 << TCR2BUB));
+//TCCR1B = 1;}
 
 
 
 
 /*********************************************************************************************************************************/
 void Minimise_error_down(int limit, unsigned char *counter_1, unsigned char *counter_2, long *error_mag, unsigned char *OSCCAL_mem, char local_cal_mode )
-{while(*counter_2 < 20){ OSCCAL = *counter_1; *error_mag = compute_error(0,local_cal_mode,0); 
+{while(*counter_2 < 20){ OSCCAL = *counter_1; *error_mag = compute_error_UNO(0,local_cal_mode,0); 
 if(*error_mag < limit)break;
 *counter_1 -= 1;
 *counter_2 +=1;}
@@ -50,7 +52,7 @@ if (*counter_2 < 20)*OSCCAL_mem = OSCCAL;else OSCCAL = *OSCCAL_mem;}
 
 
 void Minimise_error_up(int limit, unsigned char *counter_1, unsigned char *counter_2, long *error_mag, unsigned char *OSCCAL_mem, char local_cal_mode )
-{while(*counter_2 < 20){ OSCCAL = *counter_1; *error_mag = compute_error(0,local_cal_mode,0);
+{while(*counter_2 < 20){ OSCCAL = *counter_1; *error_mag = compute_error_UNO(0,local_cal_mode,0);
 	if(*error_mag < limit)break;
 	*counter_1 += 1;
 *counter_2 +=1;}
@@ -58,7 +60,7 @@ if (*counter_2 < 20)*OSCCAL_mem = OSCCAL;else OSCCAL = *OSCCAL_mem;}
 
 
 /**************************************************************************************************************************************/		
-long compute_error(char local_error_mode, char local_cal_mode, char sign)					
+long compute_error_Xtal(char local_error_mode, char local_cal_mode, char sign)			//Watch Xtal				
 {long error;
 char Num_1, Num_2;
 	
@@ -74,3 +76,38 @@ if ((!sign) && (error < 0)) error *= (-1);
 if (local_error_mode)
 {buffer[EA_buff_ptr] = error/Num_2; EA_buff_ptr++;}
 return error/Num_2;}
+
+
+
+long compute_error_UNO(char local_error_mode, char Num_Av, char sign)				//UNO provides time standard
+{long error;
+	
+	error_sum = 0;
+	int_counter = 0;													//Initialise all registers
+	TCNT1_sum = 0;
+	TCCR1B = 0;															//Ensure T1 is halted
+	TCNT1 = 0;															//clear Timer 1
+	enable_PCI_on_SCK_pin;
+	set_PCI_mask_on_SCK;	
+	Enable_Timer_1_Interrupt;
+	while (int_counter < Num_Av);										//Pause here for interrupts: Average the result over several 32.768mS periods
+	disable_PCI_on_SCK_pin;
+	clear_PCI_mask_on_SCK;	
+	Disable_Timer_1_Interrupt;
+	error = error_sum/Num_Av;											//Obtain average result
+	if (!(sign) && error < 0) error = error * (-1);						//Set sign if required
+	
+	if (local_error_mode)
+{buffer[EA_buff_ptr] = error/Num_Av; EA_buff_ptr++;}
+	
+	
+	
+	return error;
+	}
+
+
+
+
+
+
+
