@@ -3,6 +3,23 @@
 
 
 
+/*
+Watch Xtal mode
+T1 clocks at 8000KHz (no prescaling)
+T2 clocks at 32.768KHz (No prescaling)
+T1 counts to 62500 when T2 counts to 256
+
+UNO clock mode	
+The UNO puts a  65.536mS square wave on the UNO clock programming pin	PB5 (SCK/PCINT5) ISR (PCINT0_vect)
+Generates a pin change intterrupt (PCI) every 32.768mS and calls ISR (PCINT0_vect)
+7.8125 KHz clock counts to 256 in 32.768mS 
+Set T1 prescaler to 8 for a 1MHz clock
+T1 counts to 32768   
+
+
+*/
+
+
 #include "Cal_Atmega_V1_header_file.h"
 
 
