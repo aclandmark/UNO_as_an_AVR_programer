@@ -1,6 +1,6 @@
 
 
-
+PRINT OUT PREVIOUS VALUS OF OSCALL
 
 
 /*
@@ -12,7 +12,6 @@ T1 counts to 62500 when T2 counts to 256
 UNO clock mode	
 The UNO puts a  65.536mS square wave on the UNO clock programming pin	PB5 (SCK/PCINT5) ISR (PCINT0_vect)
 Generates a pin change intterrupt (PCI) every 32.768mS and calls ISR (PCINT0_vect)
-7.8125 KHz clock counts to 256 in 32.768mS 
 Set T1 prescaler to 8 for a 1MHz clock
 T1 counts to 32768   
 
@@ -29,20 +28,23 @@ int main (void)
   int EEP_MAX = 0x2000;
   
   setup_HW;
-  OCR1A = 0xFF;
+  OCR1A = 0xFFFF;
   //ASSR = (1 << AS2);                                //initialise T2 for crystal
+ 
+  sendString("\r\nTest string printed using default cal:  Can it be read?\r\n"); 
+  
   OSCCAL_DV = OSCCAL;                               //Save default value off OSCCAL
 
   Auto_cal (0);                                 //Search starting from 0xF0
   OSCCAL += 1;                                  //Check performance for OSCCAL_WV +/- 1
-  Get_ready_to_calibrate;
+  //Get_ready_to_calibrate;
   sei();
   error_up = compute_error_UNO(0,2,0);                        //Check that OSCCAL_WV is not at a
   OSCCAL -=2; error_down = compute_error_UNO(0,2,0);                  //discontinuity on the
-  close_calibration;                                //OSCCAL v error plot
+  //close_calibration;                                //OSCCAL v error plot
   cli();
   OSCCAL += 1;                                  //Restore OSCCAL to OSCCAL_WV
-  if ((error_up > 1000) || (error_down > 1000))
+  if ((error_up > 500) || (error_down > 500))             //1000
   {sendString("\r\nPoor result: Searching for alternative value\r\n");
   Auto_cal (1);}                                  //Repeat search starting from 0x10
   
@@ -80,10 +82,10 @@ void Auto_cal (char direction){
 
   UCSR0B &= (~(1 << RXEN0));                        //avoid unwanted keypresses
 
-  Timer_T1_sub(T1_delay_1sec);                      //Crystal warm up time
+  //Timer_T1_sub(T1_delay_1sec);                      //Crystal warm up time
 
   sei();
-  cal_mode = 1;
+  cal_mode = 2;
   //Get_ready_to_calibrate;
   
   if (!(direction))
@@ -95,7 +97,7 @@ void Auto_cal (char direction){
       if(error_mag < 1000)break;}
     OSCCAL_mem = OSCCAL;
     counter_2 = 0;
-    cal_mode = 5;
+    cal_mode = 2;   //5
     limit = 1000;
     for(int m = 1; m <= 9; m++){sendChar('.');
       limit -= 100;
@@ -111,7 +113,7 @@ void Auto_cal (char direction){
         if(error_mag < 1000)break;}
       OSCCAL_mem = OSCCAL;
       counter_2 = 0;
-      cal_mode = 5;
+      cal_mode = 2;
       limit = 1000;
       for(int m = 1; m <= 9; m++){sendChar('.');
         limit -= 100;
@@ -120,8 +122,8 @@ void Auto_cal (char direction){
   
   error_mag = compute_error_UNO(0,cal_mode,0);
   OSCCAL_WV = OSCCAL;
-  close_calibration;
-Num_to_PC(10, error_mag);sendChar('A');Num_to_PC(10, OSCCAL_mem);
+  //close_calibration;
+//Num_to_PC(10, error_mag);sendChar('A');Num_to_PC(10, OSCCAL_mem);
   UCSR0B |= (1 << RXEN0);
 cli();}
 
@@ -142,14 +144,14 @@ void Manual_cal(void){
   sei();
 
   EA_buff_ptr = 0;
-  cal_mode = 5;
+  cal_mode = 2;//5;
   ////Get_ready_to_calibrate;
   OSCCAL -=20;
   osccal_MIN = OSCCAL;                            //Compute cal error for 41 values of OSCCAL
   for(int m = 0; m <= 40; m++)
   {cal_error = compute_error_UNO(1,cal_mode,1);OSCCAL++;}
   OSCCAL = OSCCAL_WV;                             //Restore working value of OSCCAL
-  close_calibration;
+  //close_calibration;
 
   newline();
   sendString("OSCCAL\t Error\r\n");
@@ -176,10 +178,10 @@ void Manual_cal(void){
   
   /*********************************************/
   else
-    {Get_ready_to_calibrate;                        //Test value of OSCCAL entered by user
+    {//Get_ready_to_calibrate;                        //Test value of OSCCAL entered by user
     OSCCAL = OSCCAL_UV;                           //Test new OSCCAL value
     calibrate_without_sign_plus_warm_up_time;
-    close_calibration;
+    //close_calibration;
 
     if(cal_error > 1750)                          //Error resulting from User OSCCAL exceeds 1750
       {OSCCAL = OSCCAL_WV;                        //Reinstate working value
