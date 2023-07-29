@@ -68,7 +68,7 @@ default: USART_init(0,25); break;}
 
 
 
-
+//
 /*****************************************************************************/
 #define SW_reset {wdt_enable(WDTO_30MS);while(1);}
 
@@ -105,25 +105,25 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 
 
 /*****************************************************************************/
-#define Get_ready_to_calibrate \
+/*#define Get_ready_to_calibrate \
 TIMSK2 |= (1 << TOIE2);\
 TIMSK1 |= (1 << TOIE1);\
 initialise_timers_for_cal_error();\
-start_timers_for_cal_error();
+start_timers_for_cal_error();*/
 
 /*****************************************************************************/
-#define close_calibration \
+/*#define close_calibration \
 initialise_timers_for_cal_error();\
 TIMSK2 &= (~(1 << TOIE2));\
-TIMSK1 &= (~(1 << TOIE1));
+TIMSK1 &= (~(1 << TOIE1));*/
 
 
 /*****************************************************************************/
 #define calibrate_without_sign_plus_warm_up_time \
 cal_mode = 5;\
-cal_error = compute_error_Xtal(0,cal_mode,0);\
-cal_error = compute_error_Xtal(0,cal_mode,0);\
-cal_error = compute_error_Xtal(0,cal_mode,0);
+cal_error = compute_error_UNO(0,cal_mode,0);\
+cal_error = compute_error_UNO(0,cal_mode,0);\
+cal_error = compute_error_UNO(0,cal_mode,0);
 
 
 
@@ -148,6 +148,7 @@ Device_family[0] = "Atmega ";\
 Device_family[1] = "ATtiny ";
 
 /*****************************************************************************/
+/*
 #define set_device_type_and_memory_size \
 Set_device_signatures;\
 sig_byte_2 = eeprom_read_byte((uint8_t*)(EEP_MAX - 4));\
@@ -185,4 +186,31 @@ switch(sig_byte_2){\
 		switch (sig_byte_3)\
 			{case 0x09: device_ptr = 4; family_ptr = 0; break;}\
 		break;}
+*/
+
+
+
+#define set_device_type_and_memory_size \
+Set_device_signatures;\
+sig_byte_2 = eeprom_read_byte((uint8_t*)(EEP_MAX - 4));\
+sig_byte_3 = eeprom_read_byte((uint8_t*)(EEP_MAX - 5));\
+\
+switch(sig_byte_2){\
+	\
+	case 0x94: FlashSZ = 0x2000; EE_size = 0x200;\
+		switch (sig_byte_3)\
+			{case 0x06: \
+			case 0x0B: device_ptr = 2; family_ptr = 0; break;}\
+		break;\
+	\
+	case 0x95: FlashSZ = 0x4000; EE_size = 0x400;\
+		switch (sig_byte_3)\
+			{case 0x14:\
+			case 0x0F: device_ptr = 3; family_ptr = 0; break;\
+			case 0x02: device_ptr = 5; family_ptr = 0; break;}\
+		break;}
+
+
+
+
 
