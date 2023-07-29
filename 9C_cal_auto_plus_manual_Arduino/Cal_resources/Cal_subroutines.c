@@ -16,28 +16,28 @@ void printout_cal_values(void){
 sendString("\r\nValues saved to EEPROM  ");	
 Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-1)); sendChar('\t');
 Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-2)); sendString("\tUser value\r\n\t\t\t");
-Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-3)); sendString("\t\tDefault value\r\n");}
+Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-3)); sendString("\tDefault value\r\n");}
 
 
 
 
 
 /******************************************************************************************************************************/
-void initialise_timers_for_cal_error(void){
+/*void initialise_timers_for_cal_error(void){
 TCNT1=0;TCCR1B = 0;													//Reset and halt T1
 //TCCR2B =  0x0;	while(ASSR & (1 << TCR2BUB));						//Halt T2
 //TCCR2A = 0; while(ASSR & (1 << TCR2AUB));							//Reset T2 
 //TCNT2=0; while(ASSR & (1 << TCN2UB));	
 }																//Reset TCNT2
-
+*/
 
 
 
 /*********************************************************************************************************************************/
-void start_timers_for_cal_error(void){}
+/*void start_timers_for_cal_error(void){}
 //{TCCR2B = 1; 	
 //while(ASSR & (1 << TCR2BUB));
-//TCCR1B = 1;}
+//TCCR1B = 1;}*/
 
 
 
@@ -89,16 +89,16 @@ long compute_error_UNO(char local_error_mode, char Num_Av, char sign)				//UNO p
 	TCNT1 = 0;															//clear Timer 1
 	enable_PCI_on_SCK_pin;
 	set_PCI_mask_on_SCK;	
-	Enable_Timer_1_Interrupt;
+	//Enable_Timer_1_Interrupt;
 	while (int_counter < Num_Av);										//Pause here for interrupts: Average the result over several 32.768mS periods
 	disable_PCI_on_SCK_pin;
 	clear_PCI_mask_on_SCK;	
-	Disable_Timer_1_Interrupt;
+	//Disable_Timer_1_Interrupt;
 	error = error_sum/Num_Av;											//Obtain average result
 	if (!(sign) && error < 0) error = error * (-1);						//Set sign if required
 	
 	if (local_error_mode)
-{buffer[EA_buff_ptr] = error/Num_Av; EA_buff_ptr++;}
+{buffer[EA_buff_ptr] = error; EA_buff_ptr++;}
 	
 	
 	
