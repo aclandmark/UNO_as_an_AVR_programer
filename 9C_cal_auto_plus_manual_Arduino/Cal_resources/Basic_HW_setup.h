@@ -25,6 +25,7 @@ void Manual_cal(void);
 unsigned char OSCCAL_WV;
 unsigned char OSCCAL_UV;
 unsigned char OSCCAL_DV;
+unsigned char User_cal_old;
 int EE_size;
 unsigned int FlashSZ;
 
@@ -68,7 +69,6 @@ default: USART_init(0,25); break;}
 
 
 
-//
 /*****************************************************************************/
 #define SW_reset {wdt_enable(WDTO_30MS);while(1);}
 
@@ -100,22 +100,12 @@ if ((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
 &&  (eeprom_read_byte((uint8_t*)(EE_size - 2)) < 0xF0) && (eeprom_read_byte((uint8_t*)(EE_size - 2))\
 == eeprom_read_byte((uint8_t*)(EE_size - 1)))) OSCCAL = eeprom_read_byte((uint8_t*)(EE_size - 2));
 
+#define device_calibrated \
+((eeprom_read_byte((uint8_t*)(EE_size - 2)) > 0x0F)\
+&&  (eeprom_read_byte((uint8_t*)(EE_size - 2)) < 0xF0) && (eeprom_read_byte((uint8_t*)(EE_size - 2))\
+== eeprom_read_byte((uint8_t*)(EE_size - 1))))
 
 
-
-
-/*****************************************************************************/
-/*#define Get_ready_to_calibrate \
-TIMSK2 |= (1 << TOIE2);\
-TIMSK1 |= (1 << TOIE1);\
-initialise_timers_for_cal_error();\
-start_timers_for_cal_error();*/
-
-/*****************************************************************************/
-/*#define close_calibration \
-initialise_timers_for_cal_error();\
-TIMSK2 &= (~(1 << TOIE2));\
-TIMSK1 &= (~(1 << TOIE1));*/
 
 
 /*****************************************************************************/
@@ -127,11 +117,11 @@ cal_error = compute_error_UNO(0,cal_mode,0);
 
 
 
-
-
 /*****************************************************************************/
 const char *Device_type[8], *Device_family[2];
 int device_ptr, family_ptr;
+
+
 
 /*****************************************************************************/
 #define Set_device_signatures \
@@ -147,49 +137,9 @@ Device_type[6] = "44A";\
 Device_family[0] = "Atmega ";\
 Device_family[1] = "ATtiny ";
 
+
+
 /*****************************************************************************/
-/*
-#define set_device_type_and_memory_size \
-Set_device_signatures;\
-sig_byte_2 = eeprom_read_byte((uint8_t*)(EEP_MAX - 4));\
-sig_byte_3 = eeprom_read_byte((uint8_t*)(EEP_MAX - 5));\
-\
-switch(sig_byte_2){\
-	\
-	case 0x92: FlashSZ = 0x800;  EE_size = 0x100;\
-		switch (sig_byte_3)\
-			{case 0x05: \
-			case 0x0A: device_ptr = 0; family_ptr = 0; break;\
-			case 0x07: device_ptr = 6; family_ptr = 1; break;}\
-		break;\
-		\
-	case 0x93: FlashSZ = 0x1000; EE_size = 0x200;\
-		switch (sig_byte_3)\
-			{case 0x0A:\
-			case 0x0F: device_ptr = 1; family_ptr = 0; break;}\
-		break;\
-		\
-	case 0x94: FlashSZ = 0x2000; EE_size = 0x200;\
-		switch (sig_byte_3)\
-			{case 0x06: \
-			case 0x0B: device_ptr = 2; family_ptr = 0; break;}\
-		break;\
-	\
-	case 0x95: FlashSZ = 0x4000; EE_size = 0x400;\
-		switch (sig_byte_3)\
-			{case 0x14:\
-			case 0x0F: device_ptr = 3; family_ptr = 0; break;\
-			case 0x02: device_ptr = 5; family_ptr = 0; break;}\
-		break;\
-	\
-	case 0x96: FlashSZ = 0x8000; EE_size = 0x800;\
-		switch (sig_byte_3)\
-			{case 0x09: device_ptr = 4; family_ptr = 0; break;}\
-		break;}
-*/
-
-
-
 #define set_device_type_and_memory_size \
 Set_device_signatures;\
 sig_byte_2 = eeprom_read_byte((uint8_t*)(EEP_MAX - 4));\
