@@ -1,5 +1,5 @@
 
-long compute_error_Xtal(char, char, char);
+
 long compute_error_UNO(char, char, char);
 
 /********************************************************************************************************************************/
@@ -21,27 +21,6 @@ Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-3)); sendString("\tDefault value
 
 
 
-
-/******************************************************************************************************************************/
-/*void initialise_timers_for_cal_error(void){
-TCNT1=0;TCCR1B = 0;													//Reset and halt T1
-//TCCR2B =  0x0;	while(ASSR & (1 << TCR2BUB));						//Halt T2
-//TCCR2A = 0; while(ASSR & (1 << TCR2AUB));							//Reset T2 
-//TCNT2=0; while(ASSR & (1 << TCN2UB));	
-}																//Reset TCNT2
-*/
-
-
-
-/*********************************************************************************************************************************/
-/*void start_timers_for_cal_error(void){}
-//{TCCR2B = 1; 	
-//while(ASSR & (1 << TCR2BUB));
-//TCCR1B = 1;}*/
-
-
-
-
 /*********************************************************************************************************************************/
 void Minimise_error_down(int limit, unsigned char *counter_1, unsigned char *counter_2, long *error_mag, unsigned char *OSCCAL_mem, char local_cal_mode )
 {while(*counter_2 < 20){ OSCCAL = *counter_1; *error_mag = compute_error_UNO(0,local_cal_mode,0); 
@@ -57,6 +36,7 @@ void Minimise_error_up(int limit, unsigned char *counter_1, unsigned char *count
 	*counter_1 += 1;
 *counter_2 +=1;}
 if (*counter_2 < 20)*OSCCAL_mem = OSCCAL;else OSCCAL = *OSCCAL_mem;}
+
 
 
 /**************************************************************************************************************************************/		
@@ -89,21 +69,16 @@ long compute_error_UNO(char local_error_mode, char Num_Av, char sign)				//UNO p
 	TCNT1 = 0;															//clear Timer 1
 	enable_PCI_on_SCK_pin;
 	set_PCI_mask_on_SCK;	
-	//Enable_Timer_1_Interrupt;
 	while (int_counter < Num_Av);										//Pause here for interrupts: Average the result over several 32.768mS periods
 	disable_PCI_on_SCK_pin;
 	clear_PCI_mask_on_SCK;	
-	//Disable_Timer_1_Interrupt;
 	error = error_sum/Num_Av;											//Obtain average result
 	if (!(sign) && error < 0) error = error * (-1);						//Set sign if required
 	
 	if (local_error_mode)
 {buffer[EA_buff_ptr] = error; EA_buff_ptr++;}
 	
-	
-	
-	return error;
-	}
+		return error;	}
 
 
 
