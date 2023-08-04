@@ -118,24 +118,16 @@ cal_error = compute_error_UNO(0,cal_mode,0);
 
 
 /*****************************************************************************/
-const char *Device_type[8], *Device_family[2];
-int device_ptr, family_ptr;
+const char *Device_type[2];
+int device_ptr;
 
 
 
 /*****************************************************************************/
 #define Set_device_signatures \
-Device_type[0] = "48/P";\
-Device_type[1] = "88/P";\
-Device_type[2] = "168/P";\
-Device_type[3] = "328/P";\
-Device_type[4] = "644";\
-Device_type[5] = "32A";\
-Device_type[6] = "44A";\
 \
-\
-Device_family[0] = "Atmega ";\
-Device_family[1] = "ATtiny ";
+Device_type[0] = "168/P";\
+Device_type[1] = "328/P";
 
 
 
@@ -150,14 +142,14 @@ switch(sig_byte_2){\
 	case 0x94: FlashSZ = 0x2000; EE_size = 0x200;\
 		switch (sig_byte_3)\
 			{case 0x06: \
-			case 0x0B: device_ptr = 2; family_ptr = 0; break;}\
+			case 0x0B: device_ptr = 0;  break;}\
 		break;\
 	\
 	case 0x95: FlashSZ = 0x4000; EE_size = 0x400;\
 		switch (sig_byte_3)\
 			{case 0x14:\
-			case 0x0F: device_ptr = 3; family_ptr = 0; break;\
-			case 0x02: device_ptr = 5; family_ptr = 0; break;}\
+			case 0x0F: device_ptr = 1;  break;}\
+			\
 		break;}
 
 
