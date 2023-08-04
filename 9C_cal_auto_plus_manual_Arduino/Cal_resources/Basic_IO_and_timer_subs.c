@@ -106,16 +106,16 @@ void newline(void){sendString ("\r\n");}
 
 
 /*********************************************************************/
-void Num_to_PC(char radix, long int_num){
+/*void Num_to_PC(char radix, long int_num){
 char array[12];												//long  has 10 chars + sign + null terminator	
 SBtoAL(array, int_num, radix);								//calls the Binary to askii subroutine
 NumericString_to_PC(array);}	
-
+*/
 
 
 
 /*********************************************************************/
-void SBtoAL(char array[], long num, char radix){					//Signed Binary to Askii
+/*void SBtoAL(char array[], long num, char radix){					//Signed Binary to Askii
 int m=0;
 long sign;
 
@@ -138,40 +138,40 @@ do {array[m] = num % radix;
 if(array[m] < 10)array[m] += '0'; else array[m] += '7';
 m++;} while ((num = num/radix) > 0);
 if (sign < 0) {array[m] = '-';m++;}}
-
+*/
 
 
 
 
 /*********************************************************************/
-void NumericString_to_PC(char* s){					
+/*void NumericString_to_PC(char* s){					
 int n=0;
 while (s[n] != '\0')n++;									//scroll to end of string counting the number of characters
 for(int m = n; m; m--)sendChar(*(s + m-1));}	
-
+*/
 
 
 
 
 /*********************************************************************/
-char decimal_digit (char data){
+/*char decimal_digit (char data){
 if (((data > '9') || (data < '0')) )return 0;
 else return 1;}
-
+*/
 
 
 
 
 /*********************************************************************/
-char decimal_digit_or_x (char data){
+/*char decimal_digit_or_x (char data){
 if (((data <= '9') && (data >= '0')) || (data == 'x') )return 1;
 else return 0;}
-
+*/
 
 
 
 /*********************************************************************/
-char UC_from_KBD(void){
+/*char UC_from_KBD(void){
 char keypress;
 unsigned char number;
 
@@ -191,30 +191,30 @@ if (decimal_digit (keypress))
 {sendChar(keypress);
 keypress -= '0';
 number = number * 10 + keypress;}}
-return number;}
+return number;}*/
 
 
 
 
 
 /*********************************************************************/
-void nop_delay(int nop_counter){for(int q = 0; q<= nop_counter; q++) {asm("nop");}}
+//void nop_delay(int nop_counter){for(int q = 0; q<= nop_counter; q++) {asm("nop");}}
 
 
 
 /*********************************************************************/
-void Timer_T0_10mS_delay_x_m(int m)
-{for (int n = 0; n < m; n++){Timer_T0_sub(T0_delay_10ms);}}
+//void Timer_T0_10mS_delay_x_m(int m)
+//{for (int n = 0; n < m; n++){Timer_T0_sub(T0_delay_10ms);}}
 
 
 
 /*********************************************************************/
-void Timer_T0_sub(char Counter_speed, unsigned char Start_point){ 
+/*void Timer_T0_sub(char Counter_speed, unsigned char Start_point){ 
 TCNT0 = Start_point;
 TCCR0B = Counter_speed;
 while(!(TIFR0 & (1<<TOV0)));
 TIFR0 |= (1<<TOV0); TCCR0B = 0;}
-
+*/
 
 
 
