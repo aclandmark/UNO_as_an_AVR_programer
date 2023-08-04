@@ -12,11 +12,11 @@ eeprom_write_byte((uint8_t*)(EE_size - 3), OSCCAL_DV);}
 
 
 /********************************************************************************************************************************/
-void printout_cal_values(void){
-sendString("\r\nValues saved to EEPROM  ");	
+/*void printout_cal_values(void){
+sendString("\r\nValues saved to EEPROM  ");
 Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-1)); sendChar('\t');
 Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-2)); sendString("\tUser value\r\n\t\t\t");
-Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-3)); sendString("\tDefault value\r\n");}
+Num_to_PC(10,eeprom_read_byte((uint8_t*)EE_size-3)); sendString("\tDefault value\r\n");}*/
 
 
 
@@ -40,7 +40,7 @@ if (*counter_2 < 20)*OSCCAL_mem = OSCCAL;else OSCCAL = *OSCCAL_mem;}
 
 
 /**************************************************************************************************************************************/		
-long compute_error_Xtal(char local_error_mode, char local_cal_mode, char sign)			//Watch Xtal				
+/*long compute_error_Xtal(char local_error_mode, char local_cal_mode, char sign)			//Watch Xtal				
 {long error;
 char Num_1, Num_2;
 	
@@ -55,7 +55,7 @@ error = error_SUM;
 if ((!sign) && (error < 0)) error *= (-1);
 if (local_error_mode)
 {buffer[EA_buff_ptr] = error/Num_2; EA_buff_ptr++;}
-return error/Num_2;}
+return error/Num_2;}*/
 
 
 
